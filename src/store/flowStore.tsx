@@ -323,6 +323,14 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [user]);
 
   useEffect(() => {
+    const root = window.document.documentElement;
+    const themes = ['theme-zinc', 'theme-slate', 'theme-stone', 'theme-neutral'];
+    themes.forEach(t => root.classList.remove(t));
+    const accent = user?.grayAccent || 'zinc';
+    root.classList.add(`theme-${accent}`);
+  }, [user?.grayAccent]);
+
+  useEffect(() => {
     localStorage.setItem('fb_active_tab', activeTab);
   }, [activeTab]);
 
