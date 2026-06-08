@@ -363,7 +363,7 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ taskId, onCl
                 placeholder="Add sub-task milestone..."
                 value={newChecklistText}
                 onChange={(e) => setNewChecklistText(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-900 focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
               />
               <button
                 type="submit"
@@ -397,13 +397,13 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ taskId, onCl
                   value={mockFileName}
                   onChange={(e) => setMockFileName(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-900 focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                 />
                 <div className="flex gap-2">
                   <select
                     value={mockFileType}
                     onChange={(e) => setMockFileType(e.target.value)}
-                    className="w-1/2 rounded-lg border border-gray-200 bg-white py-1.5 pl-2 pr-4 text-xs font-semibold text-gray-705 dark:border-neutral-800 dark:bg-neutral-950"
+                    className="w-1/2 rounded-lg border border-gray-200 bg-white py-1.5 pl-2 pr-4 text-xs font-semibold text-gray-705 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
                   >
                     <option value="application/pdf">PDF File</option>
                     <option value="image/png">PNG Screenshot</option>
@@ -467,7 +467,7 @@ export const TaskDetailDrawer: React.FC<TaskDetailDrawerProps> = ({ taskId, onCl
                 placeholder="Leave review comment..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-neutral-900 dark:border-neutral-850 dark:bg-neutral-950 dark:text-neutral-100"
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-900 focus:outline-none focus:border-neutral-900 dark:border-neutral-850 dark:bg-neutral-950 dark:text-neutral-100"
               />
               <button
                 type="submit"

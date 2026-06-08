@@ -446,7 +446,7 @@ export const KanbanPage: React.FC = () => {
                   placeholder="Task title (e.g. Optimize Prisma database indices)"
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-900 focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                 />
               </div>
 
@@ -457,7 +457,7 @@ export const KanbanPage: React.FC = () => {
                   value={newTaskDesc}
                   onChange={(e) => setNewTaskDesc(e.target.value)}
                   rows={3}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:outline-none focus:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                 />
               </div>
 
@@ -468,7 +468,7 @@ export const KanbanPage: React.FC = () => {
                   <select
                     value={newTaskPriority}
                     onChange={(e) => setNewTaskPriority(e.target.value as TaskPriority)}
-                    className="w-full rounded-lg border border-gray-200 py-1.5 pl-2 pr-4 text-xs font-semibold dark:border-neutral-800 dark:bg-neutral-950"
+                    className="w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-2 pr-4 text-xs font-semibold text-gray-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                   >
                     <option value="low">Low Priority</option>
                     <option value="medium">Medium Priority</option>
@@ -485,7 +485,7 @@ export const KanbanPage: React.FC = () => {
                     required
                     value={newTaskHours}
                     onChange={(e) => setNewTaskHours(Number(e.target.value) || 4)}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold dark:border-neutral-800 dark:bg-neutral-950"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                   />
                 </div>
               </div>
@@ -498,7 +498,7 @@ export const KanbanPage: React.FC = () => {
                   required
                   value={newTaskDueDate}
                   onChange={(e) => setNewTaskDueDate(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold dark:border-neutral-800 dark:bg-neutral-950"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                 />
               </div>
 
@@ -510,7 +510,7 @@ export const KanbanPage: React.FC = () => {
                   placeholder="Backend, Infra, Performance"
                   value={newTaskTags}
                   onChange={(e) => setNewTaskTags(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold dark:border-neutral-800 dark:bg-neutral-950"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                 />
               </div>
 
@@ -523,7 +523,7 @@ export const KanbanPage: React.FC = () => {
                     required
                     value={newTaskAssignee}
                     onChange={(e) => setNewTaskAssignee(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-xs font-semibold dark:border-neutral-800 dark:bg-neutral-950"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs font-semibold text-gray-900 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
                   />
                 </div>
 
@@ -534,7 +534,7 @@ export const KanbanPage: React.FC = () => {
                     required
                     value={newTaskEmail}
                     onChange={(e) => setNewTaskEmail(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-xs font-normal text-gray-500 dark:border-neutral-800 dark:bg-neutral-950"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs font-normal text-gray-700 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400"
                   />
                 </div>
               </div>
