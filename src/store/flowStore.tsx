@@ -270,21 +270,7 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         // Safe fallback
       }
     }
-    return {
-      email: 'prudhvimenapati@gmail.com',
-      name: 'Prudhvi Menapati',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
-      username: 'prudhvi',
-      bio: 'SaaS Builder & Workflow Designer. Building FlowBoard.',
-      twoFactorEnabled: false,
-      density: 'standard',
-      grayAccent: 'zinc',
-      sessions: [
-        { id: 'sess-1', device: 'Chrome MacOS Ventura (Chrome 124)', ip: '192.168.1.45', location: 'San Francisco, USA', lastActive: 'Active now', current: true },
-        { id: 'sess-2', device: 'Safari iPhone 15 Pro Max', ip: '172.56.21.99', location: 'New York, USA', lastActive: '2 hours ago', current: false },
-        { id: 'sess-3', device: 'Brave Windows 11 Desktop', ip: '64.233.160.23', location: 'Austin, USA', lastActive: '3 days ago', current: false }
-      ]
-    };
+    return null;
   });
 
   const [activeTab, setActiveTabState] = useState<'dashboard' | 'kanban' | 'calendar' | 'analytics' | 'settings'>(() => {
