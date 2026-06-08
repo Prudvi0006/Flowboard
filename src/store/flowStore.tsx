@@ -244,7 +244,7 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (parsed) {
+        if (parsed && parsed.rememberMe) {
           if (!parsed.sessions || parsed.sessions.length === 0) {
             parsed.sessions = [
               { id: 'sess-1', device: 'Chrome MacOS Ventura (Chrome 124)', ip: '192.168.1.45', location: 'San Francisco, USA', lastActive: 'Active now', current: true },

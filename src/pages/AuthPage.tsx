@@ -12,8 +12,8 @@ export const AuthPage: React.FC = () => {
   const [view, setView] = useState<'login' | 'register' | 'forgot_password'>('login');
   
   // Form elements state
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState(() => localStorage.getItem('fb_remembered_email') || '');
+  const [name, setName] = useState(() => localStorage.getItem('fb_remembered_name') || '');
   const [password, setPassword] = useState('••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -22,8 +22,8 @@ export const AuthPage: React.FC = () => {
 
   // Google Sign-In Simulation state
   const [showGoogleModal, setShowGoogleModal] = useState(false);
-  const [googleEmail, setGoogleEmail] = useState('');
-  const [googleName, setGoogleName] = useState('');
+  const [googleEmail, setGoogleEmail] = useState(() => localStorage.getItem('fb_remembered_google_email') || '');
+  const [googleName, setGoogleName] = useState(() => localStorage.getItem('fb_remembered_google_name') || '');
   const [googleEmailError, setGoogleEmailError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,12 +36,21 @@ export const AuthPage: React.FC = () => {
     }
 
     if (view === 'login') {
+      if (rememberMe) {
+        localStorage.setItem('fb_remembered_email', email.trim());
+        localStorage.setItem('fb_remembered_name', name.trim());
+      } else {
+        localStorage.removeItem('fb_remembered_email');
+        localStorage.removeItem('fb_remembered_name');
+      }
       login(email.trim(), name || 'Guest Developer', rememberMe);
     } else if (view === 'register') {
       if (!name.trim()) {
         setErrorFeedback('Full Name is required.');
         return;
       }
+      localStorage.setItem('fb_remembered_email', email.trim());
+      localStorage.setItem('fb_remembered_name', name.trim());
       register(email.trim(), name.trim());
     } else {
       // Forgot Password simulation
@@ -50,8 +59,8 @@ export const AuthPage: React.FC = () => {
   };
 
   const handleGoogleOAuth = () => {
-    setGoogleEmail('');
-    setGoogleName('');
+    setGoogleEmail(localStorage.getItem('fb_remembered_google_email') || '');
+    setGoogleName(localStorage.getItem('fb_remembered_google_name') || '');
     setGoogleEmailError('');
     setShowGoogleModal(true);
   };
@@ -76,6 +85,8 @@ export const AuthPage: React.FC = () => {
       return;
     }
 
+    localStorage.setItem('fb_remembered_google_email', trimmedEmail);
+    localStorage.setItem('fb_remembered_google_name', googleName.trim());
     login(trimmedEmail, googleName.trim(), true);
     setShowGoogleModal(false);
   };
