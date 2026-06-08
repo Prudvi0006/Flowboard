@@ -1,0 +1,8 @@
+{
+  "name": "FlowBoard",
+  "description": "An intelligent Kanban-based productivity board with workload balancing, deadline risk analytics, calendar scheduling, and focus optimization.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
