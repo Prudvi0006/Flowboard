@@ -240,8 +240,8 @@ export const KanbanPage: React.FC = () => {
         </div>
       </div>
 
-      {/* KANBAN BOARD SPLIT GRID COLUMNS */}
-      <div className="grid grid-cols-1 gap-4 overflow-x-auto min-h-[60vh] lg:grid-cols-5 pb-8" style={{ minWidth: '850px' }}>
+      {/* KANBAN BOARD FLEX COLUMNS */}
+      <div className="flex gap-4 overflow-x-auto pb-4 w-full h-[calc(100vh-285px)] min-h-[500px] items-stretch pr-2">
         {columns.map((col) => {
           const colTasks = filteredTasks.filter(t => t.status === col.id);
           const isOverloadedCol = workloadWarning?.isOverloaded && (col.id === 'todo' || col.id === 'in_progress');
@@ -252,12 +252,18 @@ export const KanbanPage: React.FC = () => {
               key={col.id}
               onDragOver={(e) => handleDragOver(e, col.id)}
               onDrop={(e) => handleDrop(e, col.id)}
-              className={`rounded-2xl border-t-2 border-gray-150 p-4 transition-all duration-200 ${col.color} ${
-                draggedOverColumn === col.id ? col.hoverColor + ' border-2 border-dashed border-neutral-400 dark:border-neutral-700' : ''
+              className={`flex flex-col rounded-2xl border-t-2 p-4 transition-all duration-200 min-w-[280px] w-[280px] md:min-w-[300px] md:w-[300px] h-full ${
+                col.id === 'backlog' ? 'border-t-slate-400 bg-slate-50/50 dark:bg-neutral-900/40' :
+                col.id === 'todo' ? 'border-t-blue-500 bg-blue-50/30 dark:bg-neutral-900/40' :
+                col.id === 'in_progress' ? 'border-t-indigo-500 bg-indigo-50/30 dark:bg-neutral-900/40' :
+                col.id === 'review' ? 'border-t-amber-500 bg-amber-50/30 dark:bg-neutral-900/40' :
+                'border-t-emerald-500 bg-emerald-50/30 dark:bg-neutral-900/40'
+              } ${
+                draggedOverColumn === col.id ? 'border-2 border-dashed border-neutral-400 dark:border-neutral-700 bg-gray-100/50 dark:bg-neutral-800/50' : ''
               }`}
             >
               {/* Column Header meta */}
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black tracking-tight text-gray-900 dark:text-neutral-100 uppercase">
                     {col.name}
@@ -279,7 +285,7 @@ export const KanbanPage: React.FC = () => {
               </div>
 
               {/* Tasks List inside Column */}
-              <div className="space-y-3 min-h-[50vh]">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
                 {colTasks.length > 0 ? (
                   colTasks.map((t) => {
                     const totalChecks = t.checklist.length;
@@ -400,7 +406,7 @@ export const KanbanPage: React.FC = () => {
                     );
                   })
                 ) : (
-                  <div className="flex h-36 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200/60 text-center text-gray-300 dark:border-neutral-850 dark:text-neutral-600">
+                  <div className="flex h-36 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 text-center text-gray-400 dark:border-neutral-800 dark:text-neutral-500 bg-white/10">
                     <p className="text-[10px] font-bold">Column empty</p>
                     <p className="text-[9px] mt-0.5">Drag cards here</p>
                   </div>
