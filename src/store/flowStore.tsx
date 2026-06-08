@@ -460,14 +460,6 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     focusScore = Math.max(0, Math.min(100, Math.round(baseScore - penalty)));
   }
 
-    // Overdue reduction
-    const overdueCount = deadlineRisks.filter(r => r.risk === 'overdue').length;
-
-    const baseScore = (completionRate * 0.6) + (checklistRate * 0.4);
-    const penalty = overdueCount * 12;
-    focusScore = Math.max(0, Math.min(100, Math.round(baseScore - penalty)));
-  }
-
   // --- 4. Store Actions ---
   const login = (email: string, name: string, rememberMe: boolean) => {
     const randomAvatar = `https://images.unsplash.com/photo-${1500000005000 + Math.floor(Math.random() * 900000)}?auto=format&fit=crop&q=80&w=150`;
