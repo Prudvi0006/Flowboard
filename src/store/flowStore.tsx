@@ -103,7 +103,7 @@ const INITIAL_TASKS: Task[] = [
       { id: 'a1', name: 'pool_bottleneck_log.txt', type: 'text/plain', size: '14.2 KB', url: '#' }
     ],
     comments: [
-      { id: 'co1', author: 'Prudhvi', authorEmail: 'prudhvimenapati@gmail.com', text: 'This was flagged during our cloud deployment tests last Friday. Let us prioritize this.', createdAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString() }
+      { id: 'co1', author: 'Collaborator', authorEmail: 'collaborator@flowboard.io', text: 'This was flagged during our cloud deployment tests last Friday. Let us prioritize this.', createdAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString() }
     ],
     boardId: 'b-default',
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
@@ -205,8 +205,8 @@ const INITIAL_TASKS: Task[] = [
     dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     estimatedHours: 5,
     tags: ['Performance', 'Testing'],
-    assignee: 'Prudhvi',
-    assigneeEmail: 'prudhvimenapati@gmail.com',
+    assignee: 'Collaborator',
+    assigneeEmail: 'collaborator@flowboard.io',
     checklist: [
       { id: 'c13', title: 'Mock storage write failures on mobile emulator', completed: true },
       { id: 'c14', title: 'Confirm JSON integrity verification triggers', completed: true }
@@ -229,7 +229,7 @@ const INITIAL_BOARDS: Board[] = [
 const INITIAL_ACTIVITIES: Activity[] = [
   { id: 'act-1', text: 'Created FlowBoard Workspace', user: 'System', userEmail: 'system@flowboard.dev', type: 'create', createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'act-2', taskId: 't-3', taskTitle: 'Configure JWT authorization hooks & secure Google OAuth handlers', text: 'Moved task status to In Progress', user: 'Marcus Vance', userEmail: 'marcus.v@gmail.com', type: 'status_change', createdAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString() },
-  { id: 'act-3', taskId: 't-1', taskTitle: 'Migrate database queries to Prisma pooler limits', text: 'Added comment: "This was flagged during our cloud deployment tests..."', user: 'Prudhvi', userEmail: 'prudhvimenapati@gmail.com', type: 'comment', createdAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString() }
+  { id: 'act-3', taskId: 't-1', taskTitle: 'Migrate database queries to Prisma pooler limits', text: 'Added comment: "This was flagged during our cloud deployment tests..."', user: 'Collaborator', userEmail: 'collaborator@flowboard.io', type: 'comment', createdAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString() }
 ];
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
@@ -253,7 +253,7 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             ];
           }
           if (!parsed.username) {
-            parsed.username = parsed.email ? parsed.email.split('@')[0] : 'prudhvi';
+            parsed.username = parsed.email ? parsed.email.split('@')[0] : 'user';
           }
           if (!parsed.bio) {
             parsed.bio = 'SaaS Builder & Workflow Designer. Building FlowBoard.';

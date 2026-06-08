@@ -12,8 +12,8 @@ export const AuthPage: React.FC = () => {
   const [view, setView] = useState<'login' | 'register' | 'forgot_password'>('login');
   
   // Form elements state
-  const [email, setEmail] = useState('prudhvimenapati@gmail.com');
-  const [name, setName] = useState('Prudhvi Menapati');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -30,7 +30,7 @@ export const AuthPage: React.FC = () => {
     }
 
     if (view === 'login') {
-      login(email.trim(), name || 'Prudhvi Menapati', rememberMe);
+      login(email.trim(), name || 'Guest Developer', rememberMe);
     } else if (view === 'register') {
       if (!name.trim()) {
         setErrorFeedback('Full Name is required.');
@@ -45,7 +45,7 @@ export const AuthPage: React.FC = () => {
 
   const handleGoogleOAuth = () => {
     // Simulate instantaneous Google OAuth sign-in with default account
-    login('prudhvimenapati@gmail.com', 'Prudhvi Menapati', true);
+    login('developer@flowboard.io', 'Guest Developer', true);
   };
 
   return (
@@ -163,7 +163,7 @@ export const AuthPage: React.FC = () => {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Prudhvi Menapati"
+                    placeholder="Guest Developer"
                     className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-xs text-gray-900 placeholder:text-gray-400 focus:border-neutral-900 focus:outline-none dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-50 dark:placeholder-neutral-600 dark:focus:border-neutral-700"
                   />
                 </div>
@@ -184,7 +184,7 @@ export const AuthPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="prudhvimenapati@gmail.com"
+                  placeholder="developer@flowboard.io"
                   className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-xs text-gray-900 placeholder:text-gray-400 focus:border-neutral-900 focus:outline-none dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-50 dark:placeholder-neutral-600 dark:focus:border-neutral-700"
                 />
               </div>

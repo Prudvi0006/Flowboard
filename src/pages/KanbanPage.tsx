@@ -28,6 +28,7 @@ import {
 
 export const KanbanPage: React.FC = () => {
   const {
+    user,
     tasks,
     addTask,
     updateTask,
@@ -63,8 +64,8 @@ export const KanbanPage: React.FC = () => {
   });
   const [newTaskHours, setNewTaskHours] = useState(4);
   const [newTaskTags, setNewTaskTags] = useState('');
-  const [newTaskAssignee, setNewTaskAssignee] = useState('Prudhvi Menapati');
-  const [newTaskEmail, setNewTaskEmail] = useState('prudhvimenapati@gmail.com');
+  const [newTaskAssignee, setNewTaskAssignee] = useState(user?.name || 'Guest Developer');
+  const [newTaskEmail, setNewTaskEmail] = useState(user?.email || 'developer@flowboard.io');
 
   // 1. Column structures
   const columns: { id: TaskStatus; name: string; color: string; hoverColor: string }[] = [
@@ -147,8 +148,8 @@ export const KanbanPage: React.FC = () => {
       dueDate: newTaskDueDate,
       estimatedHours: Number(newTaskHours) || 4,
       tags: parsedTags.length > 0 ? parsedTags : ['Sprint-1'],
-      assignee: newTaskAssignee.trim() || 'Prudhvi Menapati',
-      assigneeEmail: newTaskEmail.trim() || 'prudhvimenapati@gmail.com'
+      assignee: newTaskAssignee.trim() || user?.name || 'Guest Developer',
+      assigneeEmail: newTaskEmail.trim() || user?.email || 'developer@flowboard.io'
     });
 
     // Reset fields
