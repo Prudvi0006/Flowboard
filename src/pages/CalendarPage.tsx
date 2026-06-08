@@ -24,7 +24,8 @@ export const CalendarPage: React.FC = () => {
     tasks,
     updateTask,
     setActiveTaskDetailId,
-    setActiveTab
+    setActiveTab,
+    activeBoardId
   } = useFlowStore();
 
   const [currentDate, setCurrentDate] = useState(() => new Date());
@@ -60,7 +61,9 @@ export const CalendarPage: React.FC = () => {
   // 2. Fetch tasks falling on precise dates (comparing year-month-day string format)
   const getTasksForDate = (date: Date) => {
     const dStr = date.toISOString().split('T')[0];
-    return tasks.filter(t => t.dueDate === dStr);
+    return tasks
+      .filter(t => t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default'))
+      .filter(t => t.dueDate === dStr);
   };
 
   const handlePrevRange = () => {

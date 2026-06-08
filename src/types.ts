@@ -43,6 +43,7 @@ export interface Task {
   checklist: ChecklistItem[];
   attachments: Attachment[];
   comments: Comment[];
+  boardId?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -27,6 +27,9 @@ interface FlowStoreContextType {
   activeBoardId: string;
   setActiveBoardId: (id: string) => void;
   createBoard: (name: string, description: string) => Board;
+  updateBoard: (id: string, updates: Partial<Board>) => void;
+  deleteBoard: (id: string) => void;
+  setBoards: React.Dispatch<React.SetStateAction<Board[]>>;
 
   // Tasks
   tasks: Task[];
@@ -102,6 +105,7 @@ const INITIAL_TASKS: Task[] = [
     comments: [
       { id: 'co1', author: 'Prudhvi', authorEmail: 'prudhvimenapati@gmail.com', text: 'This was flagged during our cloud deployment tests last Friday. Let us prioritize this.', createdAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString() }
     ],
+    boardId: 'b-default',
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString()
   },
@@ -122,6 +126,7 @@ const INITIAL_TASKS: Task[] = [
     ],
     attachments: [],
     comments: [],
+    boardId: 'b-default',
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
   },
@@ -146,6 +151,7 @@ const INITIAL_TASKS: Task[] = [
     comments: [
       { id: 'co2', author: 'Sarah Lin', authorEmail: 'sarah.lin@gmail.com', text: 'I am halfway through designing the login screens! Connecting state shortly.', createdAt: new Date(Date.now() - 12 * 3600 * 1000).toISOString() }
     ],
+    boardId: 'b-default',
     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -166,6 +172,7 @@ const INITIAL_TASKS: Task[] = [
     ],
     attachments: [],
     comments: [],
+    boardId: 'b-default',
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
   },
@@ -185,6 +192,7 @@ const INITIAL_TASKS: Task[] = [
     ],
     attachments: [],
     comments: [],
+    boardId: 'b-default',
     createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
   },
@@ -207,6 +215,7 @@ const INITIAL_TASKS: Task[] = [
     comments: [
       { id: 'co3', author: 'Marcus Vance', authorEmail: 'marcus.v@gmail.com', text: 'Flawless loading times after applying local storage compression caches!', createdAt: new Date(Date.now() - 20 * 3600 * 1000).toISOString() }
     ],
+    boardId: 'b-default',
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
   }
@@ -374,9 +383,12 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   // --- 3. Compute Smart Analytics & Indicators ---
+  // Get tasks specific to the currently active board
+  const boardTasks = tasks.filter(t => t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default'));
+
   // Workload Warning: Active tasks (todo, in_progress, review) > 5
-  const activeTasks = tasks.filter(t => t.status === 'todo' || t.status === 'in_progress' || t.status === 'review');
-  const totalIncomplete = tasks.filter(t => t.status !== 'done').length;
+  const activeTasks = boardTasks.filter(t => t.status === 'todo' || t.status === 'in_progress' || t.status === 'review');
+  const totalIncomplete = boardTasks.filter(t => t.status !== 'done').length;
   const isOverloaded = activeTasks.length > 5;
   const workloadWarning = {
     activeCount: activeTasks.length,
@@ -388,11 +400,11 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Bottleneck Detection: If one column contains > 40% of all tasks (if there are > 2 tasks total)
   let workflowBottleneck = null;
-  if (tasks.length > 2) {
+  if (boardTasks.length > 2) {
     const statuses: TaskStatus[] = ['backlog', 'todo', 'in_progress', 'review', 'done'];
-    const total = tasks.length;
+    const total = boardTasks.length;
     for (const st of statuses) {
-      const countInStatus = tasks.filter(t => t.status === st).length;
+      const countInStatus = boardTasks.filter(t => t.status === st).length;
       const pct = (countInStatus / total) * 100;
       if (pct > 40 && st !== 'done') {
         const readableStatus = st === 'in_progress' ? 'In Progress' : st.charAt(0).toUpperCase() + st.slice(1);
@@ -408,7 +420,7 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Deadline Risk Analysis
   // elapsedTime / estimatedTime? Wait, we can analyze tasks with due dates in relation to current time
-  const deadlineRisks = tasks
+  const deadlineRisks = boardTasks
     .filter(t => t.status !== 'done')
     .map(t => {
       const due = new Date(t.dueDate).getTime();
@@ -427,18 +439,26 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // Focus Score calculation (0 - 100):
   // Completion rate (60%) + Checklist Completion Rate (30%) + Activity weight (10%) - Overdue Penalty
   let focusScore = 85; // baseline default
-  if (tasks.length > 0) {
-    const doneTasks = tasks.filter(t => t.status === 'done').length;
-    const completionRate = (doneTasks / tasks.length) * 100;
+  if (boardTasks.length > 0) {
+    const doneTasks = boardTasks.filter(t => t.status === 'done').length;
+    const completionRate = (doneTasks / boardTasks.length) * 100;
 
     // Checklist completion
     let totalChecklistItems = 0;
     let completedChecklistItems = 0;
-    tasks.forEach(t => {
+    boardTasks.forEach(t => {
       totalChecklistItems += t.checklist.length;
       completedChecklistItems += t.checklist.filter(c => c.completed).length;
     });
     const checklistRate = totalChecklistItems > 0 ? (completedChecklistItems / totalChecklistItems) * 100 : 100;
+
+    // Overdue reduction
+    const overdueCount = deadlineRisks.filter(r => r.risk === 'overdue').length;
+
+    const baseScore = (completionRate * 0.6) + (checklistRate * 0.4);
+    const penalty = overdueCount * 12;
+    focusScore = Math.max(0, Math.min(100, Math.round(baseScore - penalty)));
+  }
 
     // Overdue reduction
     const overdueCount = deadlineRisks.filter(r => r.risk === 'overdue').length;
@@ -530,6 +550,58 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return newBoard;
   };
 
+  const updateBoard = (id: string, updates: Partial<Board>) => {
+    setBoards(prev => prev.map(b => {
+      if (b.id === id) {
+        return { ...b, ...updates };
+      }
+      return b;
+    }));
+
+    // Log Activity
+    const matching = boards.find(b => b.id === id);
+    if (matching) {
+      const newAct: Activity = {
+        id: `act-b-up-${Date.now()}`,
+        text: `Updated board "${updates.name || matching.name}" details`,
+        user: user?.name || 'Anonymous',
+        userEmail: user?.email || 'anon@anon.com',
+        type: 'edit',
+        createdAt: new Date().toISOString()
+      };
+      setActivities(prev => [newAct, ...prev]);
+    }
+  };
+
+  const deleteBoard = (id: string) => {
+    if (boards.length <= 1) return; // cannot delete last board
+    const boardToDelete = boards.find(b => b.id === id);
+    if (!boardToDelete) return;
+
+    setBoards(prev => prev.filter(b => b.id !== id));
+    // Clean up tasks belonging to this board (include legacy check)
+    setTasks(prev => prev.filter(t => t.boardId !== id && !(t.boardId === undefined && id === 'b-default')));
+
+    // If active board is deleted, set fallback
+    if (activeBoardId === id) {
+      const remaining = boards.filter(b => b.id !== id);
+      if (remaining.length > 0) {
+        setActiveBoardId(remaining[0].id);
+      }
+    }
+
+    // Log Activity
+    const newAct: Activity = {
+      id: `act-b-del-${Date.now()}`,
+      text: `Deleted project board "${boardToDelete.name}" and associated tasks`,
+      user: user?.name || 'Anonymous',
+      userEmail: user?.email || 'anon@anon.com',
+      type: 'delete',
+      createdAt: new Date().toISOString()
+    };
+    setActivities(prev => [newAct, ...prev]);
+  };
+
   // Tasks actions
   const addTask = (taskInput: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'comments' | 'checklist' | 'attachments'>) => {
     const newTask: Task = {
@@ -538,6 +610,7 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       checklist: [],
       comments: [],
       attachments: [],
+      boardId: activeBoardId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -929,6 +1002,9 @@ export const FlowStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         activeBoardId,
         setActiveBoardId,
         createBoard,
+        updateBoard,
+        deleteBoard,
+        setBoards,
         tasks,
         addTask,
         updateTask,

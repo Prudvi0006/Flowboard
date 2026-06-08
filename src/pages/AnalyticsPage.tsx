@@ -27,16 +27,19 @@ export const AnalyticsPage: React.FC = () => {
     tasks,
     focusScore,
     workflowBottleneck,
-    workloadWarning
+    workloadWarning,
+    activeBoardId
   } = useFlowStore();
+
+  const boardTasks = tasks.filter(t => t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default'));
 
   // 1. Bottleneck Analytics: column distribution
   const bottleneckData = [
-    { name: 'Backlog', Tasks: tasks.filter(t => t.status === 'backlog').length },
-    { name: 'To Do', Tasks: tasks.filter(t => t.status === 'todo').length },
-    { name: 'In Progress', Tasks: tasks.filter(t => t.status === 'in_progress').length },
-    { name: 'Review', Tasks: tasks.filter(t => t.status === 'review').length },
-    { name: 'Completed', Tasks: tasks.filter(t => t.status === 'done').length }
+    { name: 'Backlog', Tasks: boardTasks.filter(t => t.status === 'backlog').length },
+    { name: 'To Do', Tasks: boardTasks.filter(t => t.status === 'todo').length },
+    { name: 'In Progress', Tasks: boardTasks.filter(t => t.status === 'in_progress').length },
+    { name: 'Review', Tasks: boardTasks.filter(t => t.status === 'review').length },
+    { name: 'Completed', Tasks: boardTasks.filter(t => t.status === 'done').length }
   ];
 
   // 2. Focus score over time (Trends graph)
@@ -53,8 +56,8 @@ export const AnalyticsPage: React.FC = () => {
   // 3. Task Completion by Priority levels
   const priorities = ['low', 'medium', 'high', 'critical'] as const;
   const priorityCompletionData = priorities.map(pri => {
-    const total = tasks.filter(t => t.priority === pri).length;
-    const completed = tasks.filter(t => t.priority === pri && t.status === 'done').length;
+    const total = boardTasks.filter(t => t.priority === pri).length;
+    const completed = boardTasks.filter(t => t.priority === pri && t.status === 'done').length;
     return {
       name: pri.charAt(0).toUpperCase() + pri.slice(1),
       Completed: completed,
@@ -63,12 +66,12 @@ export const AnalyticsPage: React.FC = () => {
   });
 
   // 4. Deadline Performance details
-  const totalIncomplete = tasks.filter(t => t.status !== 'done');
-  const overdueCount = tasks.filter(t => {
+  const totalIncomplete = boardTasks.filter(t => t.status !== 'done');
+  const overdueCount = boardTasks.filter(t => {
     if (t.status === 'done') return false;
     return new Date(t.dueDate).getTime() < Date.now();
   }).length;
-  const completedCount = tasks.filter(t => t.status === 'done').length;
+  const completedCount = boardTasks.filter(t => t.status === 'done').length;
 
   const onTimeCount = Math.max(0, completedCount - overdueCount);
   const missedCount = overdueCount;

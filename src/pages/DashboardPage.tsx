@@ -31,22 +31,24 @@ export const DashboardPage: React.FC = () => {
     deadlineRisks,
     setActiveTaskDetailId,
     setActiveTab,
-    user
+    user,
+    activeBoardId
   } = useFlowStore();
 
   // 1. Calculate General Aggregations
-  const totalCount = tasks.length;
-  const completedCount = tasks.filter(t => t.status === 'done').length;
-  const activeCount = tasks.filter(t => t.status === 'todo' || t.status === 'in_progress' || t.status === 'review').length;
+  const boardTasks = tasks.filter(t => t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default'));
+  const totalCount = boardTasks.length;
+  const completedCount = boardTasks.filter(t => t.status === 'done').length;
+  const activeCount = boardTasks.filter(t => t.status === 'todo' || t.status === 'in_progress' || t.status === 'review').length;
   
   const nowTime = new Date().getTime();
-  const overdueCount = tasks.filter(t => {
+  const overdueCount = boardTasks.filter(t => {
     if (t.status === 'done') return false;
     return new Date(t.dueDate).getTime() < nowTime;
   }).length;
 
   // 2. Fetch future upcoming deadlines (limit to 4)
-  const upcomingTasks = tasks
+  const upcomingTasks = boardTasks
     .filter(t => t.status !== 'done')
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
     .slice(0, 4);
@@ -248,12 +250,12 @@ export const DashboardPage: React.FC = () => {
           <div className="mt-6 border-t border-gray-100 pt-4 dark:border-neutral-800 space-y-2">
             <div className="flex items-center justify-between text-[11px] font-medium text-gray-500">
               <span>Task checklist rate</span>
-              <span className="font-mono">{tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0}%</span>
+              <span className="font-mono">{boardTasks.length > 0 ? Math.round((completedCount / boardTasks.length) * 100) : 0}%</span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-neutral-800 overflow-hidden">
               <div 
                 className="h-full bg-neutral-900 dark:bg-amber-400"
-                style={{ width: `${tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0}%` }}
+                style={{ width: `${boardTasks.length > 0 ? (completedCount / boardTasks.length) * 100 : 0}%` }}
               />
             </div>
           </div>

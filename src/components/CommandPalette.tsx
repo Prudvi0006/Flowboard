@@ -34,7 +34,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     tasks,
     boards,
     setActiveBoardId,
-    setActiveTaskDetailId
+    setActiveTaskDetailId,
+    activeBoardId
   } = useFlowStore();
 
   const [search, setSearch] = useState('');
@@ -71,9 +72,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
   if (!isOpen) return null;
 
   // Filter tasks based on query
+  const boardTasks = tasks.filter(t => t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default'));
   const filteredTasks = search.trim() === '' 
-    ? tasks.slice(0, 3) 
-    : tasks.filter(t => 
+    ? boardTasks.slice(0, 3) 
+    : boardTasks.filter(t => 
         t.title.toLowerCase().includes(search.toLowerCase()) ||
         t.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase())) ||
         t.assignee.toLowerCase().includes(search.toLowerCase())

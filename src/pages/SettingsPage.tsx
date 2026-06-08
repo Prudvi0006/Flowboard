@@ -31,7 +31,9 @@ import {
   Sparkles,
   RefreshCw,
   Mail,
-  Fingerprint
+  Fingerprint,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
@@ -44,6 +46,9 @@ export const SettingsPage: React.FC = () => {
     activeBoardId,
     setActiveBoardId,
     createBoard,
+    updateBoard,
+    deleteBoard,
+    setBoards,
     tasks,
     focusScore
   } = useFlowStore();
@@ -104,6 +109,46 @@ export const SettingsPage: React.FC = () => {
     setTimeout(() => {
       setSuccessMessage(null);
     }, 4000);
+  };
+
+  const handleMoveBoard = (idx: number, direction: 'up' | 'down') => {
+    const newBoards = [...boards];
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= boards.length) return;
+    
+    // Swap
+    const temp = newBoards[idx];
+    newBoards[idx] = newBoards[targetIdx];
+    newBoards[targetIdx] = temp;
+    
+    setBoards(newBoards);
+    triggerSuccess('Board order re-arranged.');
+  };
+
+  const handleDeleteBoard = (boardId: string, boardName: string) => {
+    if (boards.length <= 1) {
+      alert("Cannot delete the only remaining project board.");
+      return;
+    }
+    if (confirm(`Are you sure you want to delete board "${boardName}"? This will delete all associated tasks.`)) {
+      deleteBoard(boardId);
+      triggerSuccess(`Board "${boardName}" successfully deleted.`);
+    }
+  };
+
+  const handleSortBoards = (criteria: 'name-asc' | 'name-desc' | 'created-newest' | 'created-oldest') => {
+    const sorted = [...boards];
+    if (criteria === 'name-asc') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (criteria === 'name-desc') {
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (criteria === 'created-newest') {
+      sorted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    } else if (criteria === 'created-oldest') {
+      sorted.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+    }
+    setBoards(sorted);
+    triggerSuccess(`Boards sorted by ${criteria.replace('-', ' ')}.`);
   };
 
   // Profile Save
@@ -705,13 +750,30 @@ export const SettingsPage: React.FC = () => {
               </div>
 
               {/* Detailed custom listing of current boards with inline edit or deletion operations */}
-              <div className="space-y-3 pt-3 border-t border-neutral-100 dark:border-neutral-850">
-                <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 tracking-wider">
-                  Manage Workspace collections
-                </label>
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-neutral-100 dark:border-neutral-850">
+                  <label className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 tracking-wider">
+                    Manage Workspace collections
+                  </label>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] font-bold text-neutral-405 uppercase tracking-wider">Auto Sort:</span>
+                    <select
+                      onChange={(e) => handleSortBoards(e.target.value as any)}
+                      defaultValue=""
+                      className="rounded-lg border border-neutral-250 bg-white py-1 px-2 text-[10px] font-bold text-neutral-650 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-450 focus:outline-none cursor-pointer"
+                    >
+                      <option value="" disabled>Select sort order...</option>
+                      <option value="name-asc">Name (A - Z)</option>
+                      <option value="name-desc">Name (Z - A)</option>
+                      <option value="created-newest">Created (Newest First)</option>
+                      <option value="created-oldest">Created (Oldest First)</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div className="space-y-2.5">
-                  {boards.map((board) => {
+                  {boards.map((board, idx) => {
                     const isEditing = editingBoardId === board.id;
                     return (
                       <div
@@ -741,14 +803,14 @@ export const SettingsPage: React.FC = () => {
                               </button>
                               <button
                                 onClick={() => {
-                                  // Update board via local storage directly or trigger simulation.
-                                  // In store, setBoards stores it in localStorage which we can trigger!
-                                  board.name = editBoardName.trim();
-                                  board.description = editBoardDesc.trim();
+                                  updateBoard(board.id, {
+                                    name: editBoardName.trim(),
+                                    description: editBoardDesc.trim()
+                                  });
                                   setEditingBoardId(null);
                                   triggerSuccess('Board metadata updated.');
                                 }}
-                                className="rounded bg-neutral-950 px-3 py-1 text-[10px] font-black text-white dark:bg-neutral-100 dark:text-neutral-950"
+                                className="rounded bg-neutral-950 px-3 py-1 text-[10px] font-black text-white dark:bg-neutral-100 dark:text-neutral-950 cursor-pointer"
                               >
                                 Commit
                               </button>
@@ -769,11 +831,58 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
+                              {/* Move Up */}
                               <button
+                                type="button"
+                                onClick={() => handleMoveBoard(idx, 'up')}
+                                disabled={idx === 0}
+                                className={`p-1 border rounded transition-colors ${
+                                  idx === 0
+                                    ? 'border-neutral-100 text-neutral-300 dark:border-neutral-900 dark:text-neutral-800 cursor-not-allowed'
+                                    : 'border-neutral-250 hover:bg-neutral-100 dark:border-neutral-800 dark:hover:bg-neutral-900 text-neutral-600 dark:text-neutral-450 cursor-pointer'
+                                }`}
+                                title="Move Board Up"
+                              >
+                                <ChevronUp className="h-3.5 w-3.5" />
+                              </button>
+
+                              {/* Move Down */}
+                              <button
+                                type="button"
+                                onClick={() => handleMoveBoard(idx, 'down')}
+                                disabled={idx === boards.length - 1}
+                                className={`p-1 border rounded transition-colors ${
+                                  idx === boards.length - 1
+                                    ? 'border-neutral-100 text-neutral-300 dark:border-neutral-900 dark:text-neutral-800 cursor-not-allowed'
+                                    : 'border-neutral-250 hover:bg-neutral-100 dark:border-neutral-800 dark:hover:bg-neutral-900 text-neutral-600 dark:text-neutral-450 cursor-pointer'
+                                }`}
+                                title="Move Board Down"
+                              >
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              </button>
+
+                              {/* Edit Specs */}
+                              <button
+                                type="button"
                                 onClick={() => handleStartEditBoard(board)}
-                                className="text-[10px] font-black border border-neutral-200 rounded px-2 py-0.5 hover:bg-neutral-100 dark:border-neutral-850 dark:hover:bg-neutral-900 transition-colors"
+                                className="text-[10px] font-black border border-neutral-200 rounded px-2 py-0.5 hover:bg-neutral-100 dark:border-neutral-850 dark:hover:bg-neutral-900 transition-colors cursor-pointer"
                               >
                                 Edit Specs
+                              </button>
+
+                              {/* Delete Board */}
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteBoard(board.id, board.name)}
+                                disabled={boards.length <= 1}
+                                className={`p-1 border rounded transition-colors ${
+                                  boards.length <= 1
+                                    ? 'border-neutral-100 text-neutral-300 dark:border-neutral-850 dark:text-neutral-800 cursor-not-allowed'
+                                    : 'border-rose-100 text-rose-500 hover:bg-rose-50 dark:border-rose-950/20 dark:hover:bg-rose-950/20 cursor-pointer'
+                                }`}
+                                title="Delete Board"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
                           </div>

@@ -77,6 +77,9 @@ export const KanbanPage: React.FC = () => {
 
   // 2. Filter logic
   const filteredTasks = tasks.filter(t => {
+    const boardMatch = t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default');
+    if (!boardMatch) return false;
+
     // Search query matches title/description/tags/assignee
     const query = searchQuery.toLowerCase().trim();
     const queryMatch = query === '' || (
@@ -95,8 +98,9 @@ export const KanbanPage: React.FC = () => {
     return queryMatch && priorityMatch && tagMatch;
   });
 
-  // Calculate unique tags from workspace tasks for filter options
-  const allUiTags = Array.from(new Set(tasks.flatMap(t => t.tags)));
+  // Calculate unique tags from active board tasks for filter options
+  const boardTasksOnly = tasks.filter(t => t.boardId === activeBoardId || (!t.boardId && activeBoardId === 'b-default'));
+  const allUiTags = Array.from(new Set(boardTasksOnly.flatMap(t => t.tags)));
 
   // 3. Drag and Drop handlers
   const handleDragStart = (e: React.DragEvent, taskId: string, currentStatus: string) => {
